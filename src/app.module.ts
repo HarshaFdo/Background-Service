@@ -4,6 +4,7 @@ import { BullModule } from '@nestjs/bullmq';
 import { ProcessorModule } from './processor/processor.module';
 import { NotificationModule } from './notification/notification.module';
 import { Vehicle } from './entities/vehicle.entity';
+import { JobModule } from './job/job.module';
 
 @Module({
   imports: [
@@ -12,7 +13,7 @@ import { Vehicle } from './entities/vehicle.entity';
       host: 'localhost',
       port: 5432,
       username: 'postgres',
-      password: 'your_password',
+      password: 'postgres',
       database: 'vehicle_db',
       entities: [Vehicle],
       synchronize: false, // Don't modify schema - vehicle-service handles it
@@ -23,6 +24,7 @@ import { Vehicle } from './entities/vehicle.entity';
         port: 6379,
       },
     }),
+    JobModule,
     ProcessorModule,
     NotificationModule,
   ],

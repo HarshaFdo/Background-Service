@@ -42,11 +42,11 @@ export class ExportProcessor extends WorkerHost {
     writeStream.end();
 
     // Send notification 
-    await this.notificationGateway.sendNotification(userId, {
-      message: `Export completed: ${vehicles.length} vehicles exported`,
-      fileName: fileName,
-      filePath: filePath,
-    });
+    // await this.notificationGateway.sendNotification(userId, {
+    //   message: `Export completed: ${vehicles.length} vehicles exported`,
+    //   fileName: fileName,
+    //   filePath: filePath,
+    // });
 
     return { success: true, count: vehicles.length, fileName };
   }
