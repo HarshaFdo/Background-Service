@@ -26,5 +26,7 @@ import { Vehicle } from './entities/vehicle.entity';
     ProcessorModule,
     NotificationModule,
   ],
+  controllers: [],
+  exports: [],
 })
 export class AppModule {}

@@ -3,7 +3,7 @@ import { Job } from 'bullmq';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { Vehicle } from '../vehicle/vehicle.entity';
+import { Vehicle } from '../entities/vehicle.entity';
 import { createWriteStream } from 'fs';
 
 @Processor('export-queue')
