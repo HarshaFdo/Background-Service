@@ -4,10 +4,12 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { Vehicle } from 'src/entities/vehicle.entity';
 import { ImportProcessor } from './import.processor';
 import { ExportProcessor } from './export.processor';
+import { HttpModule } from '@nestjs/axios';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([Vehicle]),
+    HttpModule,
     BullModule.registerQueue({
       name: 'import-queue',
     }),

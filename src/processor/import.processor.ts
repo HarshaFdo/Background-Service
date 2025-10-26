@@ -1,9 +1,7 @@
 import { Processor, WorkerHost } from '@nestjs/bullmq';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { rejects } from 'assert';
 import { Job } from 'bullmq';
-import { count } from 'console';
 import csvParser from 'csv-parser';
 import { createReadStream, unlinkSync } from 'fs';
 import { resolve } from 'path';
@@ -22,22 +20,35 @@ export class ImportProcessor extends WorkerHost {
   }
 
   async process(job: Job): Promise<any> {
-    const { filePath, fileType } = job.data;
-    const vehicles = [];
+    try {
+      console.log('Processing job:', job.id, job.data);
 
-    if (fileType === 'csv') {
-      await this.processCSV(filePath, vehicles);
-    } else if (fileType === 'excel') {
-      await this.processExcel(filePath, vehicles);
+      const { filePath, fileType } = job.data;
+      const vehicles = [];
+
+      if (fileType === 'csv') {
+        await this.processCSV(filePath, vehicles);
+      } else if (fileType === 'excel') {
+        await this.processExcel(filePath, vehicles);
+      }
+
+      console.log('Parsed vehicles:', vehicles.length);
+      console.log('Vehicle data:', vehicles);
+      // Save to the database
+      await this.vehicleRepository.save(vehicles);
+
+      console.log('Saved to database');
+
+      // Delete file after processsing
+      unlinkSync(filePath);
+
+      console.log('File deleted');
+
+      return { success: true, count: vehicles.length };
+    } catch (error) {
+      console.error('Error processing job:', error);
+      throw error;
     }
-
-    // Save to the database
-    await this.vehicleRepository.save(vehicles);
-
-    // Delete file after processsing
-    unlinkSync(filePath);
-
-    return { success: true, count: vehicles.length };
   }
 
   private processCSV(filePath: string, vehicles: any[]): Promise<void> {

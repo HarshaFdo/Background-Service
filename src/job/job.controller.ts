@@ -11,10 +11,12 @@ export class JobController {
 
   @Post('import')
   async importJob(@Body() data: { filePath: string; fileType: string }) {
-    await this.importQueue.add('import-job', {
+    const job = await this.importQueue.add('import-job', {
       filePath: data.filePath,
       fileType: data.fileType,
     });
+
+    console.log('Job added to queue:', job.id);
 
     return { message: 'Import job queued successfully' };
   }
