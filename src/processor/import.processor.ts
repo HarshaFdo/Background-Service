@@ -34,17 +34,39 @@ export class ImportProcessor extends WorkerHost {
 
       console.log('Parsed vehicles:', vehicles.length);
       console.log('Vehicle data:', vehicles);
-      // Save to the database
-      await this.vehicleRepository.save(vehicles);
 
-      console.log('Saved to database');
+      // Save vehicles one by one, skip duplicates
+      let successCount = 0;
+      let skipCount = 0;
+
+      for (const vehicle of vehicles as any[]) {
+        try {
+          // Save to the database
+          await this.vehicleRepository.save(vehicle);
+          successCount++;
+        } catch (error: any) {
+          if (error.code === '23505') {
+            // if duplicated vin , should skip the record
+            console.log(`skipping duplicate vin: ${vehicle.vin}`);
+            skipCount++;
+          } else {
+            throw error;
+          }
+        }
+      }
+      console.log(`Saved: ${successCount}, Skipped: ${skipCount}`);
 
       // Delete file after processsing
       unlinkSync(filePath);
 
       console.log('File deleted');
 
-      return { success: true, count: vehicles.length };
+      return {
+        success: true,
+        saved: successCount,
+        skipped: skipCount,
+        count: vehicles.length,
+      };
     } catch (error) {
       console.error('Error processing job:', error);
       throw error;
